@@ -1,17 +1,94 @@
-# 轻量级客户管理系统 API
+# My CRM Service
 
-基于 TypeScript、Express、Prisma 和 SQLite 的 CRM 后端。前端在独立项目中维护。
+这是一个前后端合并在同一仓库中的全栈项目，当前包含：
 
-目前支持账号登录、客户管理、跟进记录和待跟进筛选。普通用户访问自己负责的客户，管理员可以访问全部客户。
+- 后端：Express + TypeScript + Prisma + SQLite
+- 前端：Vite + Vue 3 + Element Plus
+- 文档：接口说明、部署说明等
 
-## 开发
+## 项目结构
 
-1. 安装 Node.js 和 pnpm，执行 `pnpm install`。
-2. 参考 `.env.example` 创建 `.env`，配置数据库、JWT 密钥和允许的前端来源。
-3. 执行 `pnpm exec prisma generate` 生成客户端，并执行 `pnpm exec prisma migrate deploy` 应用数据库迁移。
-4. 执行 `pnpm dev` 启动服务，默认端口为 7777。
+```text
+my_crm_service/
+├─ backend/                 # 后端代码
+│  ├─ src/
+│  ├─ prisma/
+│  ├─ tests/
+│  ├─ .env.example
+│  ├─ package.json
+│  └─ ...
+├─ frontend/                # 前端代码
+│  ├─ src/
+│  ├─ public/
+│  ├─ package.json
+│  └─ ...
+├─ docs/                    # API / 部署文档
+├─ package.json             # 根脚本入口
+├─ pnpm-workspace.yaml      # pnpm 工作区配置
+├─ .gitignore
+├─ README.md
+└─ ...
+```
 
-现有数据库在应用迁移前应先备份：删除旧作品功能的迁移会删除 `Project` 表及其数据。
+## 功能概览
+
+- 用户注册 / 登录
+- 客户管理
+- 跟进记录
+- 角色权限控制
+- 前端和后端在同一仓库中统一开发
+
+## 快速开始
+
+1. 安装依赖
+
+```bash
+pnpm install
+```
+
+2. 配置后端环境变量
+
+复制后端示例环境变量文件：
+
+```bash
+cp backend/.env.example backend/.env
+```
+
+根据实际环境修改 `backend/.env` 中的数据库连接、JWT secret 等配置。
+
+3. 启动前后端开发环境
+
+```bash
+pnpm run dev
+```
+
+这会同时启动：
+
+- 后端 API：`http://localhost:7777`
+- 前端：`http://localhost:5173`
+
+## 常用命令
+
+```bash
+pnpm run dev:api
+pnpm run dev:web
+pnpm run build
+pnpm run test
+```
+
+## 后端说明
+
+后端位于 [backend](backend)，使用以下技术栈：
+
+- Node.js
+- Express
+- TypeScript
+- Prisma
+- SQLite
+
+## 前端说明
+
+前端位于 [frontend](frontend)，当前为 Vite + Vue 3 项目，后续可继续在此处迭代和改造页面逻辑。
 
 ## 文档
 
@@ -19,4 +96,8 @@
 - [认证和健康检查](docs/API.md)
 - [部署指南](docs/DEPLOYMENT.md)
 
-项目使用 `pnpm test` 运行集成测试，测试会清理测试数据库中的数据，请勿将测试数据库指向正式数据库。
+## 注意事项
+
+- 测试数据库应与正式数据库分开，避免脏数据污染。
+- 在执行数据库迁移前，请确认本地数据库有备份。
+- 当前前端已复制进仓库中，后续可继续按需替换和优化 UI 逻辑。

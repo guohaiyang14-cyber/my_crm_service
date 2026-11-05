@@ -1,10 +1,32 @@
+# Root-level generated files
 node_modules/
 dist/
 .vscode/
 .env
 *.db
 *.db-journal
-prisma/dev.db
-prisma/dev.db-journal
-src/generated/prisma/
-src/generated/
+
+# Backend
+backend/node_modules/
+backend/dist/
+backend/.env
+backend/*.db
+backend/*.db-journal
+backend/prisma/dev.db
+backend/prisma/dev.db-journal
+backend/src/generated/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.env
+frontend/.vite/
+frontend/.vscode/
+frontend/*.local
+
+# Common editor/system files
+.DS_Store
+.idea/
+*.swp
+*.swo

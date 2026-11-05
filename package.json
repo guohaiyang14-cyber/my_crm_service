@@ -1,51 +1,22 @@
 {
   "name": "my_crm_service",
-  "version": "1.0.0",
   "private": true,
-  "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "dev:api": "nodemon --exec tsx src/index.ts",
-    "dev:web": "pnpm --dir frontend dev -- --host 0.0.0.0",
+    "dev:api": "pnpm --dir backend run dev",
+    "dev:web": "pnpm --dir frontend run dev -- --host 0.0.0.0",
     "dev": "concurrently \"pnpm run dev:api\" \"pnpm run dev:web\"",
-    "build:api": "tsc && cp -r src/generated dist/generated",
+    "build:api": "pnpm --dir backend run build",
     "build:web": "pnpm --dir frontend run build",
     "build": "pnpm run build:api && pnpm run build:web",
-    "start": "node dist/index.js",
+    "start:api": "pnpm --dir backend run start",
     "start:web": "pnpm --dir frontend run preview -- --host 0.0.0.0",
-    "lint": "eslint . && pnpm --dir frontend run lint",
-    "lint:fix": "eslint . --fix && pnpm --dir frontend run lint:fix",
-    "format": "prettier --write . && pnpm --dir frontend run format",
-    "test": "cross-env DATABASE_URL=\"file:./test.db\" NODE_ENV=test JWT_SECRET=\"test-secret\" pnpm prisma db push && cross-env DATABASE_URL=\"file:./test.db\" NODE_ENV=test JWT_SECRET=\"test-secret\" node --import tsx --test tests/app.test.ts"
-  },
-  "dependencies": {
-    "@prisma/adapter-better-sqlite3": "^7.10.1",
-    "@prisma/client": "^7.10.1",
-    "@prisma/client-runtime-utils": "^7.10.1",
-    "bcryptjs": "^3.0.3",
-    "cors": "2.8.6",
-    "dotenv": "^18.0.9",
-    "express": "5.3.0",
-    "express-rate-limit": "^8.7.1",
-    "jsonwebtoken": "^9.0.3",
-    "zod": "^4.6.7"
+    "lint": "pnpm --dir backend run lint && pnpm --dir frontend run lint",
+    "lint:fix": "pnpm --dir backend run lint:fix && pnpm --dir frontend run lint:fix",
+    "format": "pnpm --dir backend run format && pnpm --dir frontend run format",
+    "test": "pnpm --dir backend run test"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@types/bcryptjs": "^3.0.0",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^26.6.5",
-    "concurrently": "^10.0.6",
-    "cross-env": "^10.1.0",
-    "eslint": "^10.13.0",
-    "eslint-config-prettier": "^10.1.8",
-    "nodemon": "3.1.14",
-    "prettier": "^3.9.10",
-    "prisma": "^7.10.1",
-    "tsx": "^4.23.15",
-    "typescript": "^6.0.3",
-    "typescript-eslint": "^8.72.1"
+    "concurrently": "^9.1.2"
   }
 }
