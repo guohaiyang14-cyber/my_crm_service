@@ -1,0 +1,35 @@
+{
+  "name": "my_site_web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit",
+    "lint": "eslint . --ext .js,.ts,.vue",
+    "lint:fix": "eslint . --ext .js,.ts,.vue --fix",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "element-plus": "^2.14.7",
+    "vue": "^3.5.44",
+    "vue-router": "^5.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@typescript-eslint/eslint-plugin": "^8.72.1",
+    "@typescript-eslint/parser": "^8.72.1",
+    "@vitejs/plugin-vue": "^6.0.10",
+    "@vue/eslint-config-typescript": "^14.9.0",
+    "eslint": "^10.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-vue": "^10.12.0",
+    "prettier": "^3.9.10",
+    "typescript": "^5.8.3",
+    "vite": "^8.3.5",
+    "vue-eslint-parser": "^10.4.1",
+    "vue-tsc": "^2.1.10"
+  }
+}

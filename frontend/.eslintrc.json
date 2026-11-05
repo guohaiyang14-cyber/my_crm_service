@@ -1,0 +1,45 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2021": true
+  },
+  "parser": "vue-eslint-parser",
+  "parserOptions": {
+    "parser": "@typescript-eslint/parser",
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "extraFileExtensions": [".vue"]
+  },
+  "plugins": ["vue", "@typescript-eslint"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:vue/vue3-recommended",
+    "@vue/typescript/recommended",
+    "prettier"
+  ],
+  "rules": {
+    // ---- Vue 规则 ----
+    "vue/multi-word-component-names": "off",
+    "vue/no-v-html": "warn",
+    "vue/attributes-order": "off",
+
+    // ---- TypeScript 规则 ----
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "@typescript-eslint/ban-ts-comment": "warn",
+
+    // ---- 通用 JS 规则 ----
+    "no-console": "warn",
+    "no-debugger": "warn",
+    "prefer-const": "error",
+    "no-var": "error"
+  },
+  "ignorePatterns": [
+    "dist/",
+    "node_modules/",
+    "*.min.js",
+    "coverage/"
+  ]
+}
