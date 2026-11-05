@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma" // 强制输出到 src 下，方便 TS 引用
+}
+
+datasource db {
+  provider = "sqlite"
+  // 注意：Prisma 7 中 url 不能再写在这里了
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  name      String?
+  password  String    // 新增：存储哈希后的密码
+  createdAt DateTime  @default(now())
+  role      String    @default("USER")
+  customers Customer[]
+}
+
+model Customer {
+  id             Int        @id @default(autoincrement())
+  name           String
+  company        String?
+  phone          String?
+  wechat         String?
+  source         String?
+  status         String     @default("LEAD")
+  notes          String?
+  nextFollowUpAt DateTime?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  ownerId        Int
+  owner          User       @relation(fields: [ownerId], references: [id])
+  followUps      FollowUp[]
+
+  @@index([ownerId, createdAt])
+  @@index([ownerId, nextFollowUpAt])
+}
+
+model FollowUp {
+  id             Int      @id @default(autoincrement())
+  content        String
+  followedAt     DateTime @default(now())
+  nextFollowUpAt DateTime?
+  createdAt      DateTime @default(now())
+  customerId     Int
+  customer       Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId, followedAt])
+}

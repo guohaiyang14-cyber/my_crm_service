@@ -1,0 +1,7 @@
+{
+  "slug": "my-first-app-2",
+  "title": "我的第二个应用",
+  "summary": "不再乱码了",
+  "techStack": ["Node.js"],
+  "featured": true
+}
