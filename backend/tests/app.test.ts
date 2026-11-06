@@ -69,6 +69,24 @@ test('GET /api/health returns ok', async () => {
   assert.equal(data.status, 'ok');
 });
 
+test('POST /api/auth/register rejects duplicate emails with a client error', async () => {
+  const res = await fetch(`${baseUrl}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email: 'test@example.com',
+      password: 'password123',
+      name: 'Duplicate User',
+    }),
+  });
+
+  assert.equal(res.status, 400);
+  const body = await res.json();
+  assert.equal(body.code, 'VALIDATION_ERROR');
+  assert.equal(body.message, '邮箱已被注册');
+  assert.match(JSON.stringify(body.details), /邮箱|已存在|已注册|重复|使用/);
+});
+
 test('CRM customer lifecycle, access isolation and reminders', async () => {
   const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken}` };
   const request = (path: string, init: RequestInit = {}) => fetch(`${baseUrl}${path}`, init);

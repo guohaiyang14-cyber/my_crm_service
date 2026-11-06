@@ -5,12 +5,14 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
   try {
     const result = await authService.register(req.body);
     if ('details' in result) {
+      const message = result.details.some((detail) => /邮箱|已被注册|已存在|重复/.test(detail))
+        ? '邮箱已被注册'
+        : '请求体无效';
+
       return res.status(400).json({
-        error: {
-          code: 'VALIDATION_ERROR',
-          message: '请求体无效',
-          details: result.details,
-        },
+        code: 'VALIDATION_ERROR',
+        message,
+        details: result.details,
       });
     }
     res.status(201).json({ data: result.user });
@@ -24,11 +26,9 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     const result = await authService.login(req.body);
     if ('details' in result) {
       return res.status(401).json({
-        error: {
-          code: 'UNAUTHORIZED',
-          message: '用户名或密码错误',
-          details: result.details,
-        },
+        code: 'UNAUTHORIZED',
+        message: '用户名或密码错误',
+        details: result.details,
       });
     }
     res.status(200).json({

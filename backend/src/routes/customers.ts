@@ -18,7 +18,7 @@ router.use(async (req: AuthRequest, res: Response, next: NextFunction) => {
       where: { id: req.user!.userId },
       select: { id: true, role: true },
     });
-    if (!user) return res.status(401).json({ error: { code: 'UNAUTHORIZED', message: '用户不存在' } });
+    if (!user) return res.status(401).json({ code: 'UNAUTHORIZED', message: '用户不存在' });
     res.locals.access = { userId: user.id, isAdmin: user.role === 'ADMIN' };
     next();
   } catch (err) {
@@ -29,7 +29,7 @@ const idSchema = z.coerce.number().int().positive().safe();
 function parseId(req: Request, res: Response): number | null {
   const result = idSchema.safeParse(req.params.id);
   if (!result.success) {
-    res.status(400).json({ error: { code: 'VALIDATION_ERROR', message: '客户 ID 无效' } });
+    res.status(400).json({ code: 'VALIDATION_ERROR', message: '客户 ID 无效' });
     return null;
   }
   return result.data;
@@ -37,21 +37,17 @@ function parseId(req: Request, res: Response): number | null {
 function parse<T>(schema: z.ZodType<T>, input: unknown, res: Response): { value: T } | null {
   const result = schema.safeParse(input);
   if (!result.success) {
-    res
-      .status(400)
-      .json({
-        error: {
-          code: 'VALIDATION_ERROR',
-          message: '请求参数无效',
-          details: result.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`),
-        },
-      });
+    res.status(400).json({
+      code: 'VALIDATION_ERROR',
+      message: '请求参数无效',
+      details: result.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`),
+    });
     return null;
   }
   return { value: result.data };
 }
 const notFound = (res: Response) =>
-  res.status(404).json({ error: { code: 'NOT_FOUND', message: '客户不存在' } });
+  res.status(404).json({ code: 'NOT_FOUND', message: '客户不存在' });
 router.get('/', async (req, res) => {
   const query = parse(customerQuerySchema, req.query, res);
   if (!query) return;

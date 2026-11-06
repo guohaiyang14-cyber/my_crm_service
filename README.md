@@ -1,23 +1,26 @@
 # My CRM Service
 
-这是一个前后端合并在同一仓库中的全栈项目，当前包含：
+这是一个基于 Express + Vue 3 的 CRM 客户管理系统，前后端合并在同一仓库中统一开发。
 
-- 后端：Express + TypeScript + Prisma + SQLite
+## 项目简介
+
+- 后端：Node.js + Express + TypeScript + Prisma + SQLite
 - 前端：Vite + Vue 3 + Element Plus
-- 文档：接口说明、部署说明等
+- 认证：JWT 登录 / 注册
+- 功能：客户管理、跟进记录、状态跟踪、权限控制
 
-## 项目结构
+## 目录结构
 
 ```text
 my_crm_service/
-├─ backend/                 # 后端代码
+├─ backend/                 # CRM 后端
 │  ├─ src/
 │  ├─ prisma/
 │  ├─ tests/
 │  ├─ .env.example
 │  ├─ package.json
 │  └─ ...
-├─ frontend/                # 前端代码
+├─ frontend/                # CRM 前端
 │  ├─ src/
 │  ├─ public/
 │  ├─ package.json
@@ -30,13 +33,13 @@ my_crm_service/
 └─ ...
 ```
 
-## 功能概览
+## 核心功能
 
-- 用户注册 / 登录
-- 客户管理
-- 跟进记录
-- 角色权限控制
-- 前端和后端在同一仓库中统一开发
+- 用户注册与登录
+- 客户资料管理
+- 跟进记录创建与查询
+- 客户状态与待跟进时间管理
+- 普通用户与管理员权限隔离
 
 ## 快速开始
 
@@ -48,21 +51,19 @@ pnpm install
 
 2. 配置后端环境变量
 
-复制后端示例环境变量文件：
-
 ```bash
 cp backend/.env.example backend/.env
 ```
 
-根据实际环境修改 `backend/.env` 中的数据库连接、JWT secret 等配置。
+然后根据实际环境修改 `backend/.env` 中的数据库连接、JWT secret 和 CORS 配置。
 
-3. 启动前后端开发环境
+3. 启动开发环境
 
 ```bash
 pnpm run dev
 ```
 
-这会同时启动：
+启动后可访问：
 
 - 后端 API：`http://localhost:7777`
 - 前端：`http://localhost:5173`
@@ -70,34 +71,19 @@ pnpm run dev
 ## 常用命令
 
 ```bash
+pnpm run dev
 pnpm run dev:api
 pnpm run dev:web
 pnpm run build
 pnpm run test
 ```
 
-## 后端说明
-
-后端位于 [backend](backend)，使用以下技术栈：
-
-- Node.js
-- Express
-- TypeScript
-- Prisma
-- SQLite
-
-## 前端说明
-
-前端位于 [frontend](frontend)，当前为 Vite + Vue 3 项目，后续可继续在此处迭代和改造页面逻辑。
-
 ## 文档
 
 - [CRM 接口](docs/CRM_API.md)
-- [认证和健康检查](docs/API.md)
+- [API 接口文档](docs/API.md)
 - [部署指南](docs/DEPLOYMENT.md)
 
-## 注意事项
+## 说明
 
-- 测试数据库应与正式数据库分开，避免脏数据污染。
-- 在执行数据库迁移前，请确认本地数据库有备份。
-- 当前前端已复制进仓库中，后续可继续按需替换和优化 UI 逻辑。
+本仓库当前以 CRM 系统为唯一业务范围，相关前端页面、接口和文档均以客户管理场景为主。开发时请遵循现有 CRM 数据模型和权限规则，避免引入旧的作品集或 AI 页面逻辑。

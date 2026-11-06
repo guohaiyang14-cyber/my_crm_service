@@ -10,15 +10,13 @@ export interface AuthRequest extends Request {
 export const requireAuth = (req: AuthRequest, res: Response, next: NextFunction) => {
   if (!JWT_SECRET) {
     // 如果环境变量缺失，这是服务器内部错误，不是客户端的问题
-    return res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: '服务器配置错误' } });
+    return res.status(500).json({ code: 'INTERNAL_ERROR', message: '服务器配置错误' });
   }
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({
-      error: {
-        code: 'UNAUTHORIZED',
-        message: '需要登录',
-      },
+      code: 'UNAUTHORIZED',
+      message: '需要登录',
     });
   }
 
@@ -29,7 +27,8 @@ export const requireAuth = (req: AuthRequest, res: Response, next: NextFunction)
     next();
   } catch {
     return res.status(401).json({
-      error: { code: 'UNAUTHORIZED', message: '令牌已过期或无效' },
+      code: 'UNAUTHORIZED',
+      message: '令牌已过期或无效',
     });
   }
 };

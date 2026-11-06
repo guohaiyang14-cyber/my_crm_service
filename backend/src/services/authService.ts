@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { Prisma } from '../generated/prisma/index.js';
 import { prisma } from '../utils/prisma.js';
 import { registerSchema, loginSchema } from '../schemas/auth.schema.js';
 
@@ -31,16 +32,26 @@ export const register = async (data: any) => {
 
   const existing = await prisma.user.findUnique({ where: { email: email } });
   if (existing) {
-    return { details: ['注册失败，请检查你的输入。'] };
+    return { details: ['该邮箱已被注册，请使用其他邮箱。'] };
   }
 
   const hashedPassword = await bcrypt.hash(data.password, 10);
 
-  const user = await prisma.user.create({
-    data: { name: data.name, email: email, password: hashedPassword },
-  });
+  try {
+    const user = await prisma.user.create({
+      data: { name: data.name, email: email, password: hashedPassword },
+    });
 
-  return { user: { id: user.id, email: user.email, name: user.name } };
+    return { user: { id: user.id, email: user.email, name: user.name } };
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      ['P2002', 'P2022'].includes(error.code)
+    ) {
+      return { details: ['该邮箱已被注册，请使用其他邮箱。'] };
+    }
+    throw error;
+  }
 };
 
 export const login = async (data: any) => {

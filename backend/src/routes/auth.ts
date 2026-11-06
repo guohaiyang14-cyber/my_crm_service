@@ -8,7 +8,8 @@ const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: process.env.NODE_ENV === 'test' ? 100 : 5, // 测试环境放开限制
   message: {
-    error: { code: 'TOO_MANY_REQUESTS', message: '登录尝试过于频繁，请 15 分钟后再试' },
+    code: 'TOO_MANY_REQUESTS',
+    message: '登录尝试过于频繁，请 15 分钟后再试',
   },
   standardHeaders: true,
   legacyHeaders: false,

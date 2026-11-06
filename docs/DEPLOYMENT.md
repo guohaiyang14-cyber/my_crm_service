@@ -34,8 +34,8 @@ sudo apt install -y nginx
 
 ```bash
 cd /var/www
-git clone <你的后端仓库地址> my_site_service
-cd my_site_service
+git clone <你的仓库地址> my_crm_service
+cd my_crm_service
 pnpm install
 ```
 
@@ -61,9 +61,8 @@ pnpm exec prisma migrate deploy
 ### 3.4 编译并启动
 
 ```bash
-rm -rf dist
 pnpm run build
-pm2 start dist/index.js --name "my-api"
+pm2 start backend/dist/index.js --name "my-crm-api"
 pm2 save
 pm2 startup
 ```
@@ -99,7 +98,7 @@ server {
     ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
 
-    root /var/www/my_site_web/dist;
+    root /var/www/my_crm_service/frontend/dist;
     index index.html;
 
     location / {
@@ -107,7 +106,7 @@ server {
     }
 
     location /api/ {
-        proxy_pass http://127.0.0.1:3000;
+        proxy_pass http://127.0.0.1:7777;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -129,15 +128,15 @@ sudo systemctl restart nginx
 创建备份脚本：
 
 ```bash
-sudo nano /var/www/my_site_service/backup.sh
+sudo nano /var/www/my_crm_service/backup.sh
 ```
 
 脚本内容：
 
 ```bash
 #!/bin/bash
-BACKUP_DIR="/var/backups/my_site"
-DB_FILE="/var/www/my_site_service/prisma/prod.db"
+BACKUP_DIR="/var/backups/my_crm_service"
+DB_FILE="/var/www/my_crm_service/backend/prisma/prod.db"
 DATE=$(date +%Y%m%d_%H%M%S)
 
 mkdir -p "$BACKUP_DIR"
@@ -148,14 +147,14 @@ find "$BACKUP_DIR" -type f -name "prod_*.db" -mtime +7 -exec rm {} \;
 设置执行权限与定时任务：
 
 ```bash
-chmod +x /var/www/my_site_service/backup.sh
+chmod +x /var/www/my_crm_service/backup.sh
 crontab -e
 ```
 
 加入以下配置：
 
 ```cron
-0 3 * * * /var/www/my_site_service/backup.sh >> /var/log/db_backup.log 2>&1
+0 3 * * * /var/www/my_crm_service/backup.sh >> /var/log/db_backup.log 2>&1
 ```
 
 ## 6. 日常更新流程
@@ -163,21 +162,20 @@ crontab -e
 ### 更新后端
 
 ```bash
-cd /var/www/my_site_service
+cd /var/www/my_crm_service
 git pull origin main
 pnpm install
-pnpm exec prisma migrate deploy
-rm -rf dist && pnpm run build
-pm2 restart my-api
+pnpm run build
+pm2 restart my-crm-api
 ```
 
 ### 更新前端
 
 ```bash
-cd /var/www/my_site_web
+cd /var/www/my_crm_service
 git pull origin main
 pnpm install
-pnpm run build
+pnpm --dir frontend run build
 ```
 
 > 前端静态资源更新后，Nginx 会自动读取新文件，通常无需重启服务。

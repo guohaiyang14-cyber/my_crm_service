@@ -486,42 +486,6 @@ h3 {
   line-height: 1.7;
 }
 
-.portfolio-section {
-  margin-top: 10px;
-}
-
-.section-heading {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.section-heading h2 {
-  font-size: clamp(1.75rem, 2vw, 2.5rem);
-  color: #f5f3ff;
-}
-
-.projects-panel {
-  padding: 12px;
-}
-
-.panel-card {
-  border: 1px solid rgba(192, 132, 252, 0.38);
-  border-radius: 22px;
-  background: rgba(11, 13, 26, 0.72);
-  box-shadow:
-    0 0 0 1px rgba(168, 85, 247, 0.12),
-    0 22px 44px rgba(15, 23, 42, 0.42);
-  backdrop-filter: blur(12px);
-  overflow: hidden;
-}
-
-.back-link {
-  font-weight: 600;
-  color: var(--primary);
-}
-
 .auth-shell {
   min-height: 100vh;
   display: grid;
@@ -562,54 +526,6 @@ h3 {
   justify-content: flex-end;
   gap: 12px;
   margin-top: 20px;
-}
-
-.project-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-  gap: 20px;
-  padding-top: 8px;
-}
-
-.project-card {
-  height: 100%;
-  border-radius: 20px;
-  overflow: hidden;
-  border: 1px solid rgba(192, 132, 252, 0.3);
-  background: rgba(12, 15, 28, 0.74);
-  box-shadow:
-    inset 0 0 0 1px rgba(192, 132, 252, 0.08),
-    0 18px 35px rgba(15, 23, 42, 0.28);
-}
-
-.project-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.project-label {
-  font-size: 12px;
-  color: #d8b4fe;
-  margin-bottom: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.project-card h2 {
-  font-size: 1.35rem;
-  line-height: 1.3;
-  color: #f5f3ff;
-  text-shadow: 0 0 12px rgba(192, 132, 252, 0.22);
-}
-
-.summary {
-  color: var(--muted);
-  line-height: 1.7;
-  min-height: 68px;
-  margin-bottom: 16px;
 }
 
 .el-form-item__label {
@@ -753,74 +669,121 @@ h3 {
   color: #fff;
 }
 
-.tag-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 16px;
+.crm-shell {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 48px 24px 64px;
 }
 
-.project-links {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.project-actions {
+.crm-header {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
-  margin-top: auto;
+  align-items: center;
+  margin-bottom: 24px;
 }
 
-.pagination-wrap {
+.crm-header h1 {
+  font-size: 2.2rem;
+  margin: 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.stats-grid .el-card {
+  border-radius: 18px;
+  background: rgba(15, 18, 31, 0.82);
+  border: 1px solid rgba(192, 132, 252, 0.2);
+}
+
+.stat-label {
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin-bottom: 10px;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #f5f3ff;
+}
+
+.crm-body {
+  display: grid;
+  grid-template-columns: 420px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.panel-card {
+  background: rgba(16, 18, 34, 0.82);
+  border: 1px solid rgba(192, 132, 252, 0.18);
+  border-radius: 20px;
+}
+
+.card-header {
   display: flex;
-  justify-content: center;
-  margin-top: 28px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-.project-form {
-  width: 100%;
+.form-panel,
+.table-panel {
+  padding: 8px 0;
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
+  gap: 16px;
 }
 
-.form-grid .el-form-item:last-child {
+.full-width {
   grid-column: 1 / -1;
 }
 
-@media (max-width: 980px) {
-  .hero-panel {
-    grid-template-columns: 1fr;
-    padding: 20px 18px;
-  }
-
-  .feature-row {
-    grid-template-columns: 1fr;
-  }
+.submit-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
 }
 
-@media (max-width: 768px) {
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
+.toolbar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.toolbar .el-input {
+  flex: 1 1 240px;
+}
+
+.table-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  color: var(--muted);
+}
+
+.pagination-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+@media (max-width: 980px) {
+  .crm-body {
+    grid-template-columns: 1fr;
   }
 
-  .header-actions {
-    width: 100%;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-  }
-
-  .hero-copy h1 {
-    font-size: 2.5rem;
-  }
-
-  .form-grid {
+  .stats-grid {
     grid-template-columns: 1fr;
   }
 }

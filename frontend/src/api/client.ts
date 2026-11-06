@@ -91,12 +91,13 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   }
 
   if (!res.ok) {
-    const e = (payload as { error?: ApiErrorPayload })?.error ?? {}
+    const apiPayload = (payload as { error?: ApiErrorPayload } & ApiErrorPayload) ?? {}
+    const e = apiPayload.error ?? apiPayload
     const err = new ApiError({
       status: res.status,
       code: e.code || 'UNKNOWN_ERROR',
       message: e.message || `HTTP ${res.status}`,
-      details: e.details || [],
+      details: Array.isArray(e.details) ? e.details : [],
     })
 
     if (res.status === 401) {

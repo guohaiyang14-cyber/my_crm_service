@@ -1,11 +1,10 @@
 import type { NextFunction, Request, Response } from 'express';
+import { Prisma } from '../generated/prisma/index.js';
 
 export const notFound = (req: Request, res: Response): void => {
   res.status(404).json({
-    error: {
-      code: 'NOT_FOUND',
-      message: `无法访问 ${req.method} ${req.originalUrl}`,
-    },
+    code: 'NOT_FOUND',
+    message: `无法访问 ${req.method} ${req.originalUrl}`,
   });
 };
 
@@ -16,10 +15,8 @@ export const errorHandler = (err: any, req: Request, res: Response, _next: NextF
 
   if (err?.type === 'entity.parse.failed') {
     res.status(400).json({
-      error: {
-        code: 'INVALID_JSON',
-        message: '请求体不是有效的 JSON',
-      },
+      code: 'INVALID_JSON',
+      message: '请求体不是有效的 JSON',
     });
     return;
   }
@@ -27,7 +24,20 @@ export const errorHandler = (err: any, req: Request, res: Response, _next: NextF
   // 专门处理 CORS 错误
   if (err.message === 'Not allowed by CORS') {
     res.status(403).json({
-      error: { code: 'FORBIDDEN', message: 'CORS policy violation' },
+      code: 'FORBIDDEN',
+      message: 'CORS policy violation',
+    });
+    return;
+  }
+
+  const isUniqueConstraintError =
+    err instanceof Prisma.PrismaClientKnownRequestError && ['P2002', 'P2022'].includes(err.code);
+
+  if (isUniqueConstraintError) {
+    res.status(400).json({
+      code: 'VALIDATION_ERROR',
+      message: '邮箱已被注册',
+      details: ['该邮箱已被注册，请使用其他邮箱。'],
     });
     return;
   }
@@ -39,9 +49,8 @@ export const errorHandler = (err: any, req: Request, res: Response, _next: NextF
   }
 
   res.status(status).json({
-    error: {
-      code: err?.code ?? (status >= 500 ? 'INTERNAL_ERROR' : 'REQUEST_ERROR'),
-      message: status >= 500 ? '服务器内部错误' : err?.message,
-    },
+    code: err?.code ?? (status >= 500 ? 'INTERNAL_ERROR' : 'REQUEST_ERROR'),
+    message: status >= 500 ? '服务器内部错误' : err?.message,
+    ...(err?.details ? { details: err.details } : {}),
   });
 };

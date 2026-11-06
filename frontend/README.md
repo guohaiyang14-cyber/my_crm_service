@@ -1,16 +1,26 @@
-# 🚀 Personal Portfolio & Lightweight API (个人作品集与轻量 API)
+# CRM 前端
 
-一个基于现代 Web 技术栈构建的全栈个人作品集，包含前端展示页面与带鉴权、分页、数据落库的后端 API。
+这是 CRM 管理系统的前端应用，使用 Vite + Vue 3 + Element Plus 构建。
 
-🔗 **在线演示**: [https://guohy.online](https://guohy.online)
+## 功能
 
-## 🛠️ 技术栈
+- 用户登录 / 注册
+- 客户列表与详情
+- 新增 / 编辑 / 删除客户
+- 跟进记录管理
+- 角色权限控制
 
-- Vue 3 (Composition API) + Vite
-- Vue Router / TypeScript
-- 自定义封装的高效 Fetch API 客户端 (支持 JWT 拦截、全局错误处理)
+## 本地开发
 
-## 🚀 本地启动指南
+```bash
+pnpm install
+pnpm run dev
+```
 
-    pnpm install
-    pnpm dev
+默认开发地址：
+
+- 前端：`http://localhost:5173`
+
+## 说明
+
+当前前端仅面向 CRM 业务场景，不包含旧的作品集、项目展示或 AI 生成页面。
