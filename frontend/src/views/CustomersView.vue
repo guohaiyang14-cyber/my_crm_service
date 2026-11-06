@@ -1,5 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import {
+  DataAnalysis,
+  House,
+  Operation,
+  Setting,
+  SwitchButton,
+  User,
+  Wallet,
+} from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   customersApi,
@@ -9,6 +19,22 @@ import {
 } from '../api/customers'
 import { useAsync } from '../composables/useAsync'
 import { toast } from '../composables/useToast'
+
+const route = useRoute()
+
+const menuItems = [
+  { label: '首页', to: '/dashboard', icon: House },
+  { label: '应用管理', to: '/apps', icon: Operation },
+  { label: '支付管理', to: '/payments', icon: Wallet },
+  { label: '用户管理', to: '/users', icon: User },
+  { label: '数据分析', to: '/analytics', icon: DataAnalysis },
+  { label: '服务配置', to: '/settings', icon: Setting },
+  { label: '系统管理', to: '/system', icon: SwitchButton },
+]
+
+function isActive(path: string) {
+  return route.path === path || (path === '/dashboard' && route.path === '/')
+}
 
 const PAGE_SIZE = 10
 const search = ref('')
@@ -136,158 +162,190 @@ const statusOptions: Array<{ label: string; value: 'ALL' | CustomerStatus }> = [
 </script>
 
 <template>
-  <div class="crm-shell">
-    <header class="crm-header">
-      <div>
-        <p class="eyebrow">CRM</p>
-        <h1>客户管理</h1>
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="brand-block">
+        <div class="brand-mark">CTM</div>
+        <div class="brand-text">管理后台</div>
       </div>
-      <div class="header-actions">
-        <el-button v-if="hasToken" plain @click="handleLogout">退出登录</el-button>
-      </div>
-    </header>
 
-    <section class="stats-grid">
-      <el-card shadow="hover">
-        <div class="stat-label">总客户数</div>
-        <div class="stat-value">{{ total }}</div>
-      </el-card>
-      <el-card shadow="hover">
-        <div class="stat-label">跟进中</div>
-        <div class="stat-value">
-          {{ customers.filter(item => item.status === 'FOLLOWING').length }}
+      <nav class="sidebar-nav" aria-label="主导航">
+        <RouterLink
+          v-for="item in menuItems"
+          :key="item.to"
+          :to="item.to"
+          class="nav-item"
+          :class="{ active: isActive(item.to) }"
+        >
+          <el-icon class="nav-icon"><component :is="item.icon" /></el-icon>
+          <span>{{ item.label }}</span>
+        </RouterLink>
+      </nav>
+    </aside>
+
+    <main class="workspace">
+      <header class="workspace-topbar">
+        <div class="breadcrumbs">首页 / 用户管理 / 用户详情</div>
+        <div class="top-actions">
+          <button class="top-btn">预设设置</button>
+          <button class="top-btn small">◔</button>
+          <button class="top-btn small">⚙</button>
+          <el-button v-if="hasToken" class="top-btn" plain @click="handleLogout"
+            >退出登录</el-button
+          >
         </div>
-      </el-card>
-      <el-card shadow="hover">
-        <div class="stat-label">已成交</div>
-        <div class="stat-value">{{ customers.filter(item => item.status === 'WON').length }}</div>
-      </el-card>
-    </section>
+      </header>
 
-    <div class="crm-body">
-      <el-card shadow="hover" class="panel-card form-panel">
-        <template #header>
-          <div class="card-header">
-            <span>{{ editingId ? '编辑客户' : '新增客户' }}</span>
-            <el-button v-if="editingId" size="small" @click="resetForm">取消</el-button>
-          </div>
-        </template>
+      <div class="crm-shell">
+        <div class="page-head">
+          <h1>用户详情：PdeAsGhj</h1>
+        </div>
 
-        <el-form :model="form" label-position="top" @submit.prevent="handleSubmit">
-          <div class="form-grid">
-            <el-form-item label="姓名">
-              <el-input v-model="form.name" />
-            </el-form-item>
-            <el-form-item label="公司">
-              <el-input v-model="form.company" />
-            </el-form-item>
-            <el-form-item label="手机号">
-              <el-input v-model="form.phone" />
-            </el-form-item>
-            <el-form-item label="微信">
-              <el-input v-model="form.wechat" />
-            </el-form-item>
-            <el-form-item label="来源">
-              <el-input v-model="form.source" />
-            </el-form-item>
-            <el-form-item label="状态">
-              <el-select v-model="form.status" placeholder="请选择状态">
-                <el-option label="线索" value="LEAD" />
-                <el-option label="跟进中" value="FOLLOWING" />
-                <el-option label="已成交" value="WON" />
-                <el-option label="已流失" value="LOST" />
+        <section class="stats-grid">
+          <el-card shadow="hover">
+            <div class="stat-label">总客户数</div>
+            <div class="stat-value">{{ total }}</div>
+          </el-card>
+          <el-card shadow="hover">
+            <div class="stat-label">跟进中</div>
+            <div class="stat-value">
+              {{ customers.filter(item => item.status === 'FOLLOWING').length }}
+            </div>
+          </el-card>
+          <el-card shadow="hover">
+            <div class="stat-label">已成交</div>
+            <div class="stat-value">
+              {{ customers.filter(item => item.status === 'WON').length }}
+            </div>
+          </el-card>
+        </section>
+
+        <div class="crm-body">
+          <el-card shadow="hover" class="panel-card form-panel">
+            <template #header>
+              <div class="card-header">
+                <span>{{ editingId ? '编辑客户' : '新增客户' }}</span>
+                <el-button v-if="editingId" size="small" @click="resetForm">取消</el-button>
+              </div>
+            </template>
+
+            <el-form :model="form" label-position="top" @submit.prevent="handleSubmit">
+              <div class="form-grid">
+                <el-form-item label="姓名">
+                  <el-input v-model="form.name" />
+                </el-form-item>
+                <el-form-item label="公司">
+                  <el-input v-model="form.company" />
+                </el-form-item>
+                <el-form-item label="手机号">
+                  <el-input v-model="form.phone" />
+                </el-form-item>
+                <el-form-item label="微信">
+                  <el-input v-model="form.wechat" />
+                </el-form-item>
+                <el-form-item label="来源">
+                  <el-input v-model="form.source" />
+                </el-form-item>
+                <el-form-item label="状态">
+                  <el-select v-model="form.status" placeholder="请选择状态">
+                    <el-option label="线索" value="LEAD" />
+                    <el-option label="跟进中" value="FOLLOWING" />
+                    <el-option label="已成交" value="WON" />
+                    <el-option label="已流失" value="LOST" />
+                  </el-select>
+                </el-form-item>
+                <el-form-item class="full-width" label="备注">
+                  <el-input v-model="form.notes" type="textarea" :rows="3" />
+                </el-form-item>
+              </div>
+
+              <div class="submit-row">
+                <el-button type="primary" native-type="submit">{{
+                  editingId ? '保存修改' : '新增客户'
+                }}</el-button>
+              </div>
+            </el-form>
+          </el-card>
+
+          <el-card shadow="hover" class="panel-card table-panel">
+            <template #header>
+              <div class="card-header">
+                <span>客户列表</span>
+              </div>
+            </template>
+
+            <div class="toolbar">
+              <el-input
+                v-model="search"
+                placeholder="搜索客户/公司/电话"
+                clearable
+                @keyup.enter="onSearch"
+              />
+              <el-select v-model="statusFilter" @change="onSearch" style="width: 160px">
+                <el-option
+                  v-for="item in statusOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
               </el-select>
-            </el-form-item>
-            <el-form-item class="full-width" label="备注">
-              <el-input v-model="form.notes" type="textarea" :rows="3" />
-            </el-form-item>
-          </div>
+              <el-button type="primary" @click="onSearch">搜索</el-button>
+            </div>
 
-          <div class="submit-row">
-            <el-button type="primary" native-type="submit">{{
-              editingId ? '保存修改' : '新增客户'
-            }}</el-button>
-          </div>
-        </el-form>
-      </el-card>
+            <div v-if="loading" class="table-empty">加载中...</div>
+            <div v-else-if="error" class="table-empty">{{ error.message }}</div>
+            <div v-else-if="customers.length === 0" class="table-empty">暂无客户数据</div>
+            <el-table v-else :data="customers" stripe>
+              <el-table-column prop="name" label="姓名" />
+              <el-table-column prop="company" label="公司" />
+              <el-table-column prop="phone" label="电话" />
+              <el-table-column prop="status" label="状态">
+                <template #default="scope">
+                  <el-tag
+                    :type="
+                      scope.row.status === 'WON'
+                        ? 'success'
+                        : scope.row.status === 'LOST'
+                          ? 'danger'
+                          : 'warning'
+                    "
+                  >
+                    {{ scope.row.status }}
+                  </el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column prop="nextFollowUpAt" label="下次跟进">
+                <template #default="scope">
+                  {{
+                    scope.row.nextFollowUpAt
+                      ? new Date(scope.row.nextFollowUpAt).toLocaleString()
+                      : '未设置'
+                  }}
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="180">
+                <template #default="scope">
+                  <el-button size="small" @click="fillForm(scope.row)">编辑</el-button>
+                  <el-button size="small" type="danger" plain @click="handleDelete(scope.row.id)"
+                    >删除</el-button
+                  >
+                </template>
+              </el-table-column>
+            </el-table>
 
-      <el-card shadow="hover" class="panel-card table-panel">
-        <template #header>
-          <div class="card-header">
-            <span>客户列表</span>
-          </div>
-        </template>
-
-        <div class="toolbar">
-          <el-input
-            v-model="search"
-            placeholder="搜索客户/公司/电话"
-            clearable
-            @keyup.enter="onSearch"
-          />
-          <el-select v-model="statusFilter" @change="onSearch" style="width: 160px">
-            <el-option
-              v-for="item in statusOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-          <el-button type="primary" @click="onSearch">搜索</el-button>
+            <div v-if="totalPages > 1" class="pagination-wrap">
+              <el-pagination
+                :current-page="page"
+                :page-size="PAGE_SIZE"
+                :total="total"
+                background
+                layout="prev, pager, next"
+                @current-change="loadPage"
+              />
+            </div>
+          </el-card>
         </div>
-
-        <div v-if="loading" class="table-empty">加载中...</div>
-        <div v-else-if="error" class="table-empty">{{ error.message }}</div>
-        <div v-else-if="customers.length === 0" class="table-empty">暂无客户数据</div>
-        <el-table v-else :data="customers" stripe>
-          <el-table-column prop="name" label="姓名" />
-          <el-table-column prop="company" label="公司" />
-          <el-table-column prop="phone" label="电话" />
-          <el-table-column prop="status" label="状态">
-            <template #default="scope">
-              <el-tag
-                :type="
-                  scope.row.status === 'WON'
-                    ? 'success'
-                    : scope.row.status === 'LOST'
-                      ? 'danger'
-                      : 'warning'
-                "
-              >
-                {{ scope.row.status }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column prop="nextFollowUpAt" label="下次跟进">
-            <template #default="scope">
-              {{
-                scope.row.nextFollowUpAt
-                  ? new Date(scope.row.nextFollowUpAt).toLocaleString()
-                  : '未设置'
-              }}
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="180">
-            <template #default="scope">
-              <el-button size="small" @click="fillForm(scope.row)">编辑</el-button>
-              <el-button size="small" type="danger" plain @click="handleDelete(scope.row.id)"
-                >删除</el-button
-              >
-            </template>
-          </el-table-column>
-        </el-table>
-
-        <div v-if="totalPages > 1" class="pagination-wrap">
-          <el-pagination
-            :current-page="page"
-            :page-size="PAGE_SIZE"
-            :total="total"
-            background
-            layout="prev, pager, next"
-            @current-change="loadPage"
-          />
-        </div>
-      </el-card>
-    </div>
+      </div>
+    </main>
   </div>
 </template>
