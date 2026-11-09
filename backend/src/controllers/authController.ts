@@ -5,7 +5,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
   try {
     const result = await authService.register(req.body);
     if ('details' in result) {
-      const message = result.details.some((detail) => /邮箱|已被注册|已存在|重复/.test(detail))
+      const message = result.details?.some((detail) => /邮箱|已被注册|已存在|重复/.test(detail))
         ? '邮箱已被注册'
         : '请求体无效';
 
