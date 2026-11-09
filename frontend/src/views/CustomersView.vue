@@ -11,6 +11,7 @@ import {
   Wallet,
 } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import AppearanceActions from '../components/AppearanceActions.vue'
 import {
   customersApi,
   type Customer,
@@ -187,9 +188,7 @@ const statusOptions: Array<{ label: string; value: 'ALL' | CustomerStatus }> = [
       <header class="workspace-topbar">
         <div class="breadcrumbs">首页 / 用户管理 / 用户详情</div>
         <div class="top-actions">
-          <button class="top-btn">预设设置</button>
-          <button class="top-btn small">◔</button>
-          <button class="top-btn small">⚙</button>
+          <AppearanceActions />
           <el-button v-if="hasToken" class="top-btn" plain @click="handleLogout"
             >退出登录</el-button
           >

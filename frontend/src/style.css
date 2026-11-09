@@ -146,6 +146,18 @@ h3 {
   color: var(--muted);
 }
 
+.password-strength--red {
+  color: #b91c1c;
+}
+
+.password-strength--orange {
+  color: #92400e;
+}
+
+.password-strength--green {
+  color: #047857;
+}
+
 .submit-row {
   display: flex;
   justify-content: flex-end;
@@ -421,6 +433,27 @@ h3 {
   padding: 0;
 }
 
+.top-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.appearance-options {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 4px;
+  color: var(--text);
+}
+
+.appearance-options span {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
 .crm-shell {
   max-width: 1280px;
   width: 100%;
@@ -636,6 +669,167 @@ h3 {
   padding-left: 18px;
   color: #475569;
   line-height: 1.9;
+}
+
+html[data-accent='green'] {
+  --primary: #047857;
+  --primary-strong: #047857;
+  --el-color-primary: #047857;
+  --el-color-primary-light-3: #34d399;
+  --el-color-primary-light-5: #6ee7b7;
+  --el-color-primary-dark-2: #047857;
+}
+
+html[data-accent='purple'] {
+  --primary: #7c3aed;
+  --primary-strong: #6d28d9;
+  --el-color-primary: #7c3aed;
+  --el-color-primary-light-3: #a78bfa;
+  --el-color-primary-light-5: #c4b5fd;
+  --el-color-primary-dark-2: #6d28d9;
+}
+
+.brand-mark,
+.el-button--primary:not(.is-plain),
+.el-pagination .el-pager li.is-active {
+  background: var(--primary);
+}
+
+.nav-item.active,
+.content-badge {
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.content-kicker,
+.el-button--primary.is-plain {
+  color: var(--primary);
+}
+
+html.dark {
+  color-scheme: dark;
+  --bg: #111827;
+  --panel: #1f2937;
+  --panel-soft: #273449;
+  --text: #f1f5f9;
+  --muted: #aab9cc;
+  --border: #475569;
+  --el-bg-color: #1f2937;
+  --el-bg-color-page: #111827;
+  --el-fill-color: #273449;
+  --el-fill-color-light: #273449;
+  --el-border-color: #475569;
+  --el-border-color-light: #37465b;
+  --el-text-color-primary: #f1f5f9;
+  --el-text-color-regular: #d5deea;
+  --el-text-color-secondary: #aab9cc;
+}
+
+html.dark[data-accent='blue'] {
+  --el-color-primary: #2563eb;
+  --el-color-primary-light-3: #60a5fa;
+}
+
+html.dark body,
+html.dark .admin-layout {
+  background: var(--bg);
+}
+
+html.dark .sidebar,
+html.dark .workspace-topbar,
+html.dark .auth-card,
+html.dark .summary-card,
+html.dark .content-panel,
+html.dark .panel-card,
+html.dark .stats-grid .el-card,
+html.dark .el-select-dropdown,
+html.dark .el-picker-panel,
+html.dark .el-message-box {
+  background: var(--panel);
+}
+
+html.dark .brand-text,
+html.dark .page-head h1,
+html.dark .content-header h1,
+html.dark .content-panel h2,
+html.dark .summary-card strong,
+html.dark .stat-value,
+html.dark .card-header {
+  color: var(--text);
+}
+
+html.dark .nav-item,
+html.dark .breadcrumbs,
+html.dark .summary-label,
+html.dark .summary-card small,
+html.dark .content-panel ul,
+html.dark .el-form-item__label {
+  color: var(--muted);
+}
+
+html.dark .nav-item.active,
+html.dark .content-kicker,
+html.dark .content-badge {
+  color: var(--el-color-primary-light-3);
+}
+
+html.dark .el-tag--success {
+  color: #6ee7b7;
+  background: #123b30;
+  border-color: #2e8068;
+}
+
+html.dark .el-tag--warning {
+  color: #fcd34d;
+  background: #49351d;
+  border-color: #946a27;
+}
+
+html.dark .el-tag--danger {
+  color: #fca5a5;
+  background: #4a2529;
+  border-color: #a04850;
+}
+
+html.dark .el-tag--info {
+  color: #93c5fd;
+  background: #1e3a5f;
+  border-color: #4975ad;
+}
+
+html.dark .el-button--danger.is-plain {
+  color: #fca5a5;
+  background: #4a2529;
+  border-color: #a04850;
+}
+
+html.dark .password-strength--red {
+  color: #fca5a5;
+}
+
+html.dark .password-strength--orange {
+  color: #fcd34d;
+}
+
+html.dark .password-strength--green {
+  color: #6ee7b7;
+}
+
+html.dark .top-btn,
+html.dark .el-button--default,
+html.dark .el-input__wrapper,
+html.dark .el-textarea__inner,
+html.dark .el-select .el-input__wrapper,
+html.dark .el-pagination .el-pager li,
+html.dark .el-pagination .btn-prev,
+html.dark .el-pagination .btn-next {
+  background: var(--panel-soft);
+  color: var(--text);
+}
+
+html.dark .el-pagination .el-pager li.is-active {
+  background: var(--primary);
+  color: #fff;
 }
 
 @media (max-width: 980px) {

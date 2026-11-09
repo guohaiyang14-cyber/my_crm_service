@@ -64,7 +64,7 @@ async function handleRegister() {
 
         <el-form-item label="密码">
           <el-input v-model="password" type="password" placeholder="至少 6 位" show-password />
-          <small v-if="password" :style="{ color: passwordStrength.color }">
+          <small v-if="password" :class="`password-strength--${passwordStrength.color}`">
             {{ passwordStrength.text }}
           </small>
         </el-form-item>

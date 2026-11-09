@@ -10,6 +10,7 @@ import {
   User,
   Wallet,
 } from '@element-plus/icons-vue'
+import AppearanceActions from '../components/AppearanceActions.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -74,9 +75,7 @@ function handleLogout() {
       <header class="workspace-topbar">
         <div class="breadcrumbs">{{ breadcrumb }}</div>
         <div class="top-actions">
-          <button class="top-btn">预设设置</button>
-          <button class="top-btn small">◔</button>
-          <button class="top-btn small">⚙</button>
+          <AppearanceActions />
           <el-button v-if="hasToken" class="top-btn" plain @click="handleLogout"
             >退出登录</el-button
           >
