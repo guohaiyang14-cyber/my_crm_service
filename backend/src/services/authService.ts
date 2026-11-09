@@ -47,7 +47,7 @@ export const register = async (data: any) => {
   } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
-      ['P2002', 'P2022'].includes(error.code)
+      error.code === 'P2002'
     ) {
       return { details: ['该邮箱已被注册，请使用其他邮箱。'] };
     }

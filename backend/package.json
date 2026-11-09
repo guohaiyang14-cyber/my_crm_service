@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "test": "cross-env DATABASE_URL=\"file:./test.db\" NODE_ENV=test JWT_SECRET=\"test-secret\" pnpm prisma db push && cross-env DATABASE_URL=\"file:./test.db\" NODE_ENV=test JWT_SECRET=\"test-secret\" node --import tsx --test tests/app.test.ts"
+    "test": "cross-env DATABASE_URL=\"file:./test.db\" NODE_ENV=test JWT_SECRET=\"test-secret\" pnpm prisma db push && cross-env DATABASE_URL=\"file:./test.db\" NODE_ENV=test JWT_SECRET=\"test-secret\" node --import tsx --test tests/app.test.ts tests/errorHandler.test.ts"
   },
   "dependencies": {
     "@prisma/adapter-better-sqlite3": "^7.10.1",

@@ -31,7 +31,7 @@ export const errorHandler = (err: any, req: Request, res: Response, _next: NextF
   }
 
   const isUniqueConstraintError =
-    err instanceof Prisma.PrismaClientKnownRequestError && ['P2002', 'P2022'].includes(err.code);
+    err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002';
 
   if (isUniqueConstraintError) {
     res.status(400).json({
