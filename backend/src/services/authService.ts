@@ -7,14 +7,6 @@ import { registerSchema, loginSchema } from '../schemas/auth.schema.js';
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 export const register = async (data: any) => {
-  // 简单粗暴：如果在生产环境，且没有传正确的邀请码，直接拒绝
-  if (
-    process.env.NODE_ENV === 'production' &&
-    (!process.env.ADMIN_INVITE_CODE || data.inviteCode !== process.env.ADMIN_INVITE_CODE)
-  ) {
-    return { details: ['注册已关闭或邀请码无效'] };
-  }
-
   const result = registerSchema.safeParse(data);
   if (!result.success) {
     return { details: result.error.issues.map((err) => `${err.path.join('.')}: ${err.message}`) };
@@ -26,8 +18,12 @@ export const register = async (data: any) => {
     return { details: ['邮箱和密码必须输入'] };
   }
 
-  if (process.env.NODE_ENV === 'production' && email !== process.env.ADMIN_EMAIL) {
-    return { details: ['禁止其他用户注册'] };
+  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const isAdmin = !!adminEmail && email === adminEmail && !!process.env.ADMIN_INVITE_CODE &&
+    data.inviteCode === process.env.ADMIN_INVITE_CODE;
+  if ((process.env.NODE_ENV === 'production' && !isAdmin) ||
+      (email === adminEmail && !isAdmin)) {
+    return { details: ['注册已关闭或邮箱、邀请码无效'] };
   }
 
   const existing = await prisma.user.findUnique({ where: { email: email } });
@@ -39,7 +35,12 @@ export const register = async (data: any) => {
 
   try {
     const user = await prisma.user.create({
-      data: { name: data.name, email: email, password: hashedPassword },
+      data: {
+        name: data.name,
+        email: email,
+        password: hashedPassword,
+        role: isAdmin ? 'ADMIN' : 'USER',
+      },
     });
 
     return { user: { id: user.id, email: user.email, name: user.name } };
@@ -78,7 +79,7 @@ export const login = async (data: any) => {
     return genericError;
   }
 
-  const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '1h' });
+  const token = jwt.sign({ userId: user.id, email: user.email, tokenVersion: user.tokenVersion }, JWT_SECRET, { expiresIn: '1h' });
 
-  return { token, user: { id: user.id, name: user.name, email: user.email } };
+  return { token, user: { id: user.id, name: user.name, email: user.email, role: user.role } };
 };

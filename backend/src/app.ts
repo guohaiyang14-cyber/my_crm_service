@@ -5,6 +5,7 @@ import { errorHandler, notFound } from './middlewares/errorHandler.js';
 import healthRoutes from './routes/health.js';
 import customersRoutes from './routes/customers.js';
 import authRoutes from './routes/auth.js';
+import usersRoutes from './routes/users.js';
 import { requestLogger } from './utils/logger.js';
 
 const app: Express = express();
@@ -38,6 +39,7 @@ app.use(express.json({ limit: '1mb' }));
 app.use('/api/health', healthRoutes);
 app.use('/api/customers', customersRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/users', usersRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

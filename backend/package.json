@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon --exec tsx src/index.ts",
-    "build": "tsc && cp -r src/generated dist/generated",
+    "build": "prisma generate && tsc && node -e \"require('node:fs').cpSync('src/generated', 'dist/generated', { recursive: true, force: true })\"",
     "start": "node dist/index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

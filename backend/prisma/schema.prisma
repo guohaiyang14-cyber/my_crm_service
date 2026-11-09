@@ -15,6 +15,7 @@ model User {
   password  String    // 新增：存储哈希后的密码
   createdAt DateTime  @default(now())
   role      String    @default("USER")
+  tokenVersion Int    @default(0)
   customers Customer[]
 }
 

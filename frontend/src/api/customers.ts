@@ -24,6 +24,7 @@ export interface CustomerListResponse {
     page: number
     pageSize: number
     totalPages: number
+    statusCounts: Partial<Record<CustomerStatus, number>>
   }
 }
 
@@ -37,7 +38,17 @@ export interface CustomerPayload {
   notes?: string | null
 }
 
+export interface FollowUp {
+  id: number
+  content: string
+  followedAt: string
+  nextFollowUpAt: string | null
+}
+
 export const customersApi = {
+  stats: () => request<{ data: CustomerStats }>('/api/customers/stats', { silent: true }),
+  followUps: (id: number) =>
+    request<{ data: FollowUp[] }>(`/api/customers/${id}/follow-ups`, { silent: true }),
   list: async (
     params: { search?: string; status?: CustomerStatus; page?: number; pageSize?: number } = {}
   ) => {
@@ -77,4 +88,10 @@ export const customersApi = {
       silent: true,
     })
   },
+}
+
+export interface CustomerStats {
+  totalCustomers: number
+  totalFollowUps: number
+  statusCounts: Partial<Record<CustomerStatus, number>>
 }

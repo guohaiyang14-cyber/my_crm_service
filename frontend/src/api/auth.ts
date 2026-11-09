@@ -9,12 +9,14 @@ export interface RegisterPayload {
   name?: string
   email: string
   password: string
+  inviteCode?: string
 }
 
 export interface AuthUser {
   id?: number
   name?: string
   email?: string
+  role?: string
   [key: string]: unknown
 }
 

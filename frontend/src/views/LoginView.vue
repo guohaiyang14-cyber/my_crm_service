@@ -32,7 +32,7 @@ async function handleLogin() {
   <div class="auth-shell">
     <el-card shadow="hover" class="auth-card">
       <div class="auth-header">
-        <p class="eyebrow">管理员入口</p>
+        <p class="eyebrow">账号登录</p>
         <h1>登录</h1>
       </div>
 

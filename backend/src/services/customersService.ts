@@ -8,9 +8,9 @@ import type {
   customerQuerySchema,
 } from '../schemas/customer.schema.js';
 
-export type Access = { userId: number; isAdmin: boolean };
+export type Access = { userId: number; canViewAll: boolean };
 const scope = (access: Access): Prisma.CustomerWhereInput =>
-  access.isAdmin ? {} : { ownerId: access.userId };
+  access.canViewAll ? {} : { ownerId: access.userId };
 
 export async function listCustomers(access: Access, query: z.infer<typeof customerQuerySchema>) {
   const where: Prisma.CustomerWhereInput = {
@@ -27,7 +27,7 @@ export async function listCustomers(access: Access, query: z.infer<typeof custom
         }
       : {}),
   };
-  const [total, data] = await prisma.$transaction([
+  const [total, data, statusGroups] = await prisma.$transaction([
     prisma.customer.count({ where }),
     prisma.customer.findMany({
       where,
@@ -35,6 +35,7 @@ export async function listCustomers(access: Access, query: z.infer<typeof custom
       skip: (query.page - 1) * query.pageSize,
       take: query.pageSize,
     }),
+    prisma.customer.groupBy({ by: ['status'], where, _count: { _all: true } }),
   ]);
   return {
     data,
@@ -43,7 +44,22 @@ export async function listCustomers(access: Access, query: z.infer<typeof custom
       page: query.page,
       pageSize: query.pageSize,
       totalPages: Math.ceil(total / query.pageSize),
+      statusCounts: Object.fromEntries(statusGroups.map((group) => [group.status, group._count._all])),
     },
+  };
+}
+
+export async function customerStats(access: Access) {
+  const where = scope(access);
+  const [groups, totalFollowUps] = await prisma.$transaction([
+    prisma.customer.groupBy({ by: ['status'], where, _count: { _all: true } }),
+    prisma.followUp.count({ where: { customer: where } }),
+  ]);
+  const statusCounts = Object.fromEntries(groups.map((group) => [group.status, group._count._all]));
+  return {
+    totalCustomers: groups.reduce((sum, group) => sum + group._count._all, 0),
+    totalFollowUps,
+    statusCounts,
   };
 }
 export const getCustomer = (access: Access, id: number) =>

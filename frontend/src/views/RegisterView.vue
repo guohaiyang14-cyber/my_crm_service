@@ -10,6 +10,7 @@ const router = useRouter()
 const name = ref('')
 const email = ref('')
 const password = ref('')
+const inviteCode = ref('')
 const error = ref<any>(null)
 const loading = ref(false)
 
@@ -31,6 +32,7 @@ async function handleRegister() {
       name: name.value,
       email: email.value,
       password: password.value,
+      inviteCode: inviteCode.value,
     })
 
     toast('注册成功，请登录', 'success')
@@ -67,6 +69,10 @@ async function handleRegister() {
           <small v-if="password" :class="`password-strength--${passwordStrength.color}`">
             {{ passwordStrength.text }}
           </small>
+        </el-form-item>
+
+        <el-form-item label="邀请码（生产环境必填）">
+          <el-input v-model="inviteCode" type="password" placeholder="请输入管理员邀请码" show-password />
         </el-form-item>
 
         <el-button type="primary" native-type="submit" :loading="loading" block>

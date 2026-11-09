@@ -41,19 +41,28 @@ pnpm install
 
 ### 3.2 配置环境变量
 
-创建 `.env` 文件，并填入生产环境配置：
+在 `backend/.env` 中填入生产环境配置（后端进程和 Prisma 命令都从 `backend` 目录运行）：
 
 ```env
-DATABASE_URL="file:./prisma/prod.db"
+DATABASE_URL="file:/var/www/my_crm_service/backend/prisma/prod.db"
 JWT_SECRET="<使用 openssl rand -hex 32 生成的强密钥>"
 NODE_ENV="production"
-PORT=3000
+PORT=7777
 CORS_ORIGINS="https://yourdomain.com"
+ADMIN_EMAIL="admin@example.com"
+ADMIN_INVITE_CODE="<使用 openssl rand -hex 32 生成的邀请码>"
 ```
+
+生产环境注册管理员时，邮箱必须与 `ADMIN_EMAIL` 一致，邀请码必须与 `ADMIN_INVITE_CODE` 一致。部署前端后，在注册页面填写这两项即可创建管理员账号。注册完成后可移除 `ADMIN_INVITE_CODE` 并重启后端，关闭后续管理员注册。不要将邀请码提交到仓库或公开分享。
+
+管理员登录后，在「用户管理」中设置访客的邮箱和密码。访客无需注册，可直接从登录页登录，查看所有客户及跟进记录，但不能新增、修改或删除客户和跟进记录。
+
+更新到支持会话版本的版本时，需先执行数据库迁移，再启动新后端。旧版登录令牌会失效，用户需要重新登录；修改密码后，该账号的现有会话也会立即失效。
 
 ### 3.3 生成 Prisma 客户端并执行迁移
 
 ```bash
+cd /var/www/my_crm_service/backend
 pnpm exec prisma generate
 pnpm exec prisma migrate deploy
 ```
@@ -62,7 +71,7 @@ pnpm exec prisma migrate deploy
 
 ```bash
 pnpm run build
-pm2 start backend/dist/index.js --name "my-crm-api"
+pm2 start dist/index.js --name "my-crm-api"
 pm2 save
 pm2 startup
 ```
@@ -161,13 +170,26 @@ crontab -e
 
 ### 更新后端
 
+如果之前按旧指南将配置保存在项目根目录的 `.env`，请在首次升级前将配置复制到 `backend/.env`；不要覆盖已有的 `backend/.env`，并保留原来的 `JWT_SECRET` 和其他配置。例如：
+
+```bash
+cd /var/www/my_crm_service
+if [ -f .env ] && [ ! -e backend/.env ]; then cp -p .env backend/.env; fi
+```
+
+切换工作目录前，请确认旧服务实际使用的 SQLite 数据库文件，并将 `backend/.env` 中的 `DATABASE_URL` 改为指向该文件的绝对路径（格式为 `file:/绝对路径/数据库文件`）。不要直接使用新部署示例中的路径覆盖原地址，否则可能连接到另一个数据库。备份原数据库后，再执行以下迁移和构建步骤。确保配置文件存在并且后端进程账号可以读取。
+
 ```bash
 cd /var/www/my_crm_service
 git pull origin main
 pnpm install
+cd backend
+pnpm exec prisma generate
+pnpm exec prisma migrate deploy
 pnpm run build
-pm2 restart my-crm-api
 ```
+
+如果 PM2 记录的工作目录已经是 `backend`，执行 `pm2 restart my-crm-api`。如果旧进程使用了项目根目录作为工作目录，请先停止并删除该 PM2 进程，再从 `backend` 目录执行 `pm2 start dist/index.js --name "my-crm-api"` 和 `pm2 save`，使其读取 `backend/.env`。重建进程会短暂中断服务。重启后确认进程没有通过继承的环境变量覆盖新配置，且原有监听端口与 Nginx 代理端口一致；检查时不要公开密钥。
 
 ### 更新前端
 
@@ -187,7 +209,7 @@ pnpm --dir frontend run build
 检查日志：
 
 ```bash
-pm2 logs my-api
+pm2 logs my-crm-api
 ```
 
 ### 2）数据库连接错误
@@ -195,6 +217,7 @@ pm2 logs my-api
 确认 `DATABASE_URL` 路径是否正确，并确认 Prisma 迁移已执行：
 
 ```bash
+cd /var/www/my_crm_service/backend
 pnpm exec prisma migrate status
 ```
 

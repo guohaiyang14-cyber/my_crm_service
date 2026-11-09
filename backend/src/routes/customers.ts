@@ -19,7 +19,10 @@ router.use(async (req: AuthRequest, res: Response, next: NextFunction) => {
       select: { id: true, role: true },
     });
     if (!user) return res.status(401).json({ code: 'UNAUTHORIZED', message: '用户不存在' });
-    res.locals.access = { userId: user.id, isAdmin: user.role === 'ADMIN' };
+    if (user.role === 'VIEWER' && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+      return res.status(403).json({ code: 'FORBIDDEN', message: '访客只能查看数据' });
+    }
+    res.locals.access = { userId: user.id, canViewAll: ['ADMIN', 'VIEWER'].includes(user.role) };
     next();
   } catch (err) {
     next(err);
@@ -52,6 +55,10 @@ router.get('/', async (req, res) => {
   const query = parse(customerQuerySchema, req.query, res);
   if (!query) return;
   res.json(await service.listCustomers(res.locals.access as service.Access, query.value));
+});
+router.get('/stats', async (_req, res) => {
+  const data = await service.customerStats(res.locals.access as service.Access);
+  res.json({ data });
 });
 router.post('/', async (req, res) => {
   const body = parse(createCustomerSchema, req.body, res);

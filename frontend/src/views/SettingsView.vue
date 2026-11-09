@@ -9,6 +9,8 @@
         <span class="content-badge">Config</span>
       </header>
 
+      <el-alert title="示例数据，尚未接入实际业务" type="warning" :closable="false" show-icon />
+
       <section class="summary-grid">
         <div class="summary-card">
           <span class="summary-label">配置项</span>

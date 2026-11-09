@@ -8,6 +8,7 @@ import PaymentsView from '../views/PaymentsView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import SettingsView from '../views/SettingsView.vue'
 import SystemView from '../views/SystemView.vue'
+import UsersView from '../views/UsersView.vue'
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -17,6 +18,7 @@ export const router = createRouter({
     { path: '/apps', component: AppsView, meta: { requiresAuth: true } },
     { path: '/payments', component: PaymentsView, meta: { requiresAuth: true } },
     { path: '/users', component: CustomersView, meta: { requiresAuth: true } },
+    { path: '/accounts', component: UsersView, meta: { requiresAuth: true } },
     { path: '/analytics', component: AnalyticsView, meta: { requiresAuth: true } },
     { path: '/settings', component: SettingsView, meta: { requiresAuth: true } },
     { path: '/system', component: SystemView, meta: { requiresAuth: true } },

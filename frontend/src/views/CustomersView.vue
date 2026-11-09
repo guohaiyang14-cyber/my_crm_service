@@ -17,6 +17,7 @@ import {
   type Customer,
   type CustomerPayload,
   type CustomerStatus,
+  type FollowUp,
 } from '../api/customers'
 import { useAsync } from '../composables/useAsync'
 import { toast } from '../composables/useToast'
@@ -27,11 +28,16 @@ const menuItems = [
   { label: '首页', to: '/dashboard', icon: House },
   { label: '应用管理', to: '/apps', icon: Operation },
   { label: '支付管理', to: '/payments', icon: Wallet },
-  { label: '用户管理', to: '/users', icon: User },
+  { label: '客户管理', to: '/users', icon: User },
+  ...(getRole() === 'ADMIN' ? [{ label: '用户管理', to: '/accounts', icon: User }] : []),
   { label: '数据分析', to: '/analytics', icon: DataAnalysis },
   { label: '服务配置', to: '/settings', icon: Setting },
   { label: '系统管理', to: '/system', icon: SwitchButton },
 ]
+
+function getRole() {
+  try { return JSON.parse(localStorage.getItem('auth_user') || '{}').role } catch { return undefined }
+}
 
 function isActive(path: string) {
   return route.path === path || (path === '/dashboard' && route.path === '/')
@@ -42,6 +48,33 @@ const search = ref('')
 const statusFilter = ref<'ALL' | CustomerStatus>('ALL')
 const page = ref(1)
 const editingId = ref<number | null>(null)
+const selectedCustomer = ref<Customer | null>(null)
+const followUps = ref<FollowUp[]>([])
+const detailLoading = ref(false)
+const detailError = ref('')
+let detailRequest = 0
+
+async function showDetails(customer: Customer) {
+  const requestId = ++detailRequest
+  selectedCustomer.value = customer
+  followUps.value = []
+  detailError.value = ''
+  detailLoading.value = true
+  try {
+    const result = await customersApi.followUps(customer.id)
+    if (requestId === detailRequest) followUps.value = result.data
+    else if (import.meta.env.DEV) console.debug('[FIX] Ignored an outdated customer detail response')
+  } catch {
+    if (requestId === detailRequest) detailError.value = '跟进记录加载失败'
+  } finally {
+    if (requestId === detailRequest) detailLoading.value = false
+  }
+}
+
+function closeDetails() {
+  detailRequest++
+  selectedCustomer.value = null
+}
 
 const emptyForm: CustomerPayload = {
   name: '',
@@ -68,6 +101,7 @@ const customers = computed(() => data.value?.data ?? [])
 const total = computed(() => data.value?.meta.total ?? 0)
 const totalPages = computed(() => data.value?.meta.totalPages ?? 1)
 const hasToken = computed(() => !!localStorage.getItem('auth_token'))
+const isViewer = getRole() === 'VIEWER'
 
 async function loadPage(nextPage: number) {
   page.value = Math.max(1, nextPage)
@@ -186,7 +220,7 @@ const statusOptions: Array<{ label: string; value: 'ALL' | CustomerStatus }> = [
 
     <main class="workspace">
       <header class="workspace-topbar">
-        <div class="breadcrumbs">首页 / 用户管理 / 用户详情</div>
+        <div class="breadcrumbs">首页 / 客户管理</div>
         <div class="top-actions">
           <AppearanceActions />
           <el-button v-if="hasToken" class="top-btn" plain @click="handleLogout"
@@ -197,7 +231,7 @@ const statusOptions: Array<{ label: string; value: 'ALL' | CustomerStatus }> = [
 
       <div class="crm-shell">
         <div class="page-head">
-          <h1>用户详情：PdeAsGhj</h1>
+          <h1>客户管理</h1>
         </div>
 
         <section class="stats-grid">
@@ -208,19 +242,19 @@ const statusOptions: Array<{ label: string; value: 'ALL' | CustomerStatus }> = [
           <el-card shadow="hover">
             <div class="stat-label">跟进中</div>
             <div class="stat-value">
-              {{ customers.filter(item => item.status === 'FOLLOWING').length }}
+              {{ data?.meta.statusCounts.FOLLOWING ?? 0 }}
             </div>
           </el-card>
           <el-card shadow="hover">
             <div class="stat-label">已成交</div>
             <div class="stat-value">
-              {{ customers.filter(item => item.status === 'WON').length }}
+              {{ data?.meta.statusCounts.WON ?? 0 }}
             </div>
           </el-card>
         </section>
 
-        <div class="crm-body">
-          <el-card shadow="hover" class="panel-card form-panel">
+        <div class="crm-body" :class="{ 'crm-body--viewer': isViewer }">
+          <el-card v-if="!isViewer" shadow="hover" class="panel-card form-panel">
             <template #header>
               <div class="card-header">
                 <span>{{ editingId ? '编辑客户' : '新增客户' }}</span>
@@ -322,10 +356,11 @@ const statusOptions: Array<{ label: string; value: 'ALL' | CustomerStatus }> = [
                   }}
                 </template>
               </el-table-column>
-              <el-table-column label="操作" width="180">
+              <el-table-column label="操作" width="220">
                 <template #default="scope">
-                  <el-button size="small" @click="fillForm(scope.row)">编辑</el-button>
-                  <el-button size="small" type="danger" plain @click="handleDelete(scope.row.id)"
+                  <el-button size="small" @click="showDetails(scope.row)">查看</el-button>
+                  <el-button v-if="!isViewer" size="small" @click="fillForm(scope.row)">编辑</el-button>
+                  <el-button v-if="!isViewer" size="small" type="danger" plain @click="handleDelete(scope.row.id)"
                     >删除</el-button
                   >
                 </template>
@@ -344,6 +379,27 @@ const statusOptions: Array<{ label: string; value: 'ALL' | CustomerStatus }> = [
             </div>
           </el-card>
         </div>
+        <el-dialog :model-value="!!selectedCustomer" title="客户详情" @close="closeDetails">
+          <template v-if="selectedCustomer">
+            <el-descriptions :column="1" border>
+              <el-descriptions-item label="姓名">{{ selectedCustomer.name }}</el-descriptions-item>
+              <el-descriptions-item label="公司">{{ selectedCustomer.company || '—' }}</el-descriptions-item>
+              <el-descriptions-item label="电话">{{ selectedCustomer.phone || '—' }}</el-descriptions-item>
+              <el-descriptions-item label="微信">{{ selectedCustomer.wechat || '—' }}</el-descriptions-item>
+              <el-descriptions-item label="来源">{{ selectedCustomer.source || '—' }}</el-descriptions-item>
+              <el-descriptions-item label="状态">{{ selectedCustomer.status }}</el-descriptions-item>
+              <el-descriptions-item label="备注">{{ selectedCustomer.notes || '—' }}</el-descriptions-item>
+              <el-descriptions-item label="下次跟进">{{ selectedCustomer.nextFollowUpAt ? new Date(selectedCustomer.nextFollowUpAt).toLocaleString() : '未设置' }}</el-descriptions-item>
+            </el-descriptions>
+            <h3>跟进记录</h3>
+            <p v-if="detailLoading">加载中...</p>
+            <p v-else-if="detailError">{{ detailError }}</p>
+            <p v-else-if="!followUps.length">暂无跟进记录</p>
+            <ul v-else>
+              <li v-for="item in followUps" :key="item.id">{{ new Date(item.followedAt).toLocaleString() }}：{{ item.content }}<span v-if="item.nextFollowUpAt">（下次跟进：{{ new Date(item.nextFollowUpAt).toLocaleString() }}）</span></li>
+            </ul>
+          </template>
+        </el-dialog>
       </div>
     </main>
   </div>

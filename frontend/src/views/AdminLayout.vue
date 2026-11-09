@@ -19,7 +19,8 @@ const menuItems = [
   { label: '首页', to: '/dashboard', icon: House },
   { label: '应用管理', to: '/apps', icon: Operation },
   { label: '支付管理', to: '/payments', icon: Wallet },
-  { label: '用户管理', to: '/users', icon: User },
+  { label: '客户管理', to: '/users', icon: User },
+  ...(getRole() === 'ADMIN' ? [{ label: '用户管理', to: '/accounts', icon: User }] : []),
   { label: '数据分析', to: '/analytics', icon: DataAnalysis },
   { label: '服务配置', to: '/settings', icon: Setting },
   { label: '系统管理', to: '/system', icon: SwitchButton },
@@ -29,7 +30,8 @@ const breadcrumbMap: Record<string, string> = {
   '/dashboard': '首页 / 概览',
   '/apps': '首页 / 应用管理',
   '/payments': '首页 / 支付管理',
-  '/users': '首页 / 用户管理',
+  '/users': '首页 / 客户管理',
+  '/accounts': '首页 / 用户管理',
   '/analytics': '首页 / 数据分析',
   '/settings': '首页 / 服务配置',
   '/system': '首页 / 系统管理',
@@ -37,6 +39,10 @@ const breadcrumbMap: Record<string, string> = {
 
 const breadcrumb = computed(() => breadcrumbMap[route.path] ?? '首页 / 控制台')
 const hasToken = computed(() => !!localStorage.getItem('auth_token'))
+
+function getRole() {
+  try { return JSON.parse(localStorage.getItem('auth_user') || '{}').role } catch { return undefined }
+}
 
 function isActive(path: string) {
   return route.path === path || (path === '/dashboard' && route.path === '/')
